@@ -1,0 +1,410 @@
+
+html, body {
+    height: 100%;
+    background: white;
+    touch-action: none;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    line-height: 1.50;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    overflow: hidden;
+}
+
+#myViewer {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+    z-index: 10000;
+    /*overflow: hidden;*/
+    position: absolute;
+    left: 0;
+    right: 0;
+    --left: 0;
+    --right: 0;
+    transition: all 300ms ease-in-out;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+}
+
+#myToolbar {
+    min-width: 400px;
+    transform: scale(0.90, 0.90);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 100000;
+    pointer-events: none;
+    position: fixed;
+    bottom:-10px;
+    transition: all 300ms ease-in-out;
+}
+
+#myCanvas {
+    width: 100%;
+    height: 100%;
+    background: #f2f2f2;
+    cursor: default;
+    pointer-events: all;
+    margin: 0;
+    position: relative;
+}
+
+#myNavCubeCanvas {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    bottom: 0;
+    right: 0;
+    z-index: 200000;
+}
+
+#myExplorer {
+    position: fixed;
+    height: 100%;
+    color: #0061A7;
+    background: white;
+    overflow: auto;
+    /*border-right: 2px solid #212529;*/
+    padding: 0px;
+    padding-bottom: 100px;
+    padding-left: 8px;
+    user-select: none;
+    top: 0;
+    left: -460px;
+    z-index: 10;
+    width: 460px;
+    transition: all 300ms ease-in-out;
+}
+
+#explorer_toggle {
+    display: none;
+}
+
+
+
+#explorer_toggle_label {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    flex: 1 1 auto;
+    color: #03103F;
+    background-color: white;
+    text-align: center;
+    vertical-align: middle;
+    border: 2px solid #1d2453;
+    padding: .375rem .75rems; 
+    border-radius: .25rem;
+    -webkit-appearance: button;
+    overflow: visible;
+    margin: 0 2px 0 0;
+    box-sizing: border-box;
+    align-items: flex-start;
+    pointer-events: all;
+    z-index: 100000;
+    transition: all 300ms ease-in-out;
+}
+
+#explorer_toggle_label:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset !important;
+    transition : all 0.3s ease-in-out;
+}
+
+
+#explorer_toggle:checked + #explorer_toggle_label {
+    left: 430px;
+    color: #fff;
+    background-color: #1d2453;
+    border-color: #1d2453;
+}
+
+#explorer_toggle:checked ~ #myExplorer {
+    left: 0;
+}
+
+#explorer_toggle:checked ~ #myViewer {
+    left: 410px;
+    --left: 460;
+    width: calc(100% - (var(--left) + var(--right)));
+}
+
+#explorer_toggle:checked ~ #myToolbar {
+    left: 385px;
+}
+#inspector_toggle:checked ~ #myToolbar {
+    right: 460px;
+}
+#explorer_toggle:checked + .annotation-marker {
+    left: 460px;
+}
+
+#explorer_toggle:checked + .annotation-label {
+    left: 460px;
+}
+#explorer_toggle:not(:checked) + .explorer_toggle_label {
+    left: 20px;
+    color: #fff;
+    background-color: #0061A7;
+    border-color: #1d2453;
+}
+
+#explorer_toggle:not(:checked) ~ #myExplorer {
+    left: -460px;
+}
+
+#explorer_toggle:not(:checked) ~ #myViewer {
+    left: 0;
+    --left: 0;
+    width: calc(100% - var(--right));
+}
+
+#explorer_toggle:not(:checked) ~ #myToolbar {
+    left: 0px;
+}
+/* #inspector_toggle:not(:checked) ~ #myToolbar {
+    right: 0px;
+} */
+#explorer_toggle:not(:checked) + .annotation-marker {
+    left: 0px;
+}
+#explorer_toggle:not(:checked) + .annotation-label {
+    left: 0px;
+}
+
+#myInspector {
+    position: absolute;
+    max-height: 100%;
+    color: #0061A7;
+    background: white;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    border-left: 2px solid white;
+    padding: 0;
+    top: 0;
+    right: -360px;
+    
+    width: 358px;
+    transition: all 300ms ease-in-out;
+}
+
+#inspector_toggle {
+    display: none;
+}
+
+#inspector_toggle_label {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    flex: 1 1 auto;
+    color: white;
+    background-color: #0061A7;
+    text-align: center;
+    vertical-align: middle;
+    border: 2px solid #1d2453;
+    padding: .375rem .75rem; /* FIXME */
+    border-radius: .25rem;
+    -webkit-appearance: button;
+    overflow: visible;
+    margin: 0 2px 0 0; /* FIXME */
+    box-sizing: border-box;
+    align-items: flex-start;
+    pointer-events: all;
+    z-index: 100000;
+    transition: all 300ms ease-in-out;
+}
+
+#inspector_toggle_label:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset !important;
+    transition : all 0.3s ease-in-out;
+}
+
+#inspector_toggle:checked + #inspector_toggle_label {
+    right: 380px;
+    color: #fff;
+    background-color: #1d2453;
+    border-color: #1d2453;
+}
+
+#inspector_toggle:checked ~ #myViewer {
+    --right: 360;
+    right:360px;
+    width: calc(100% - (var(--left) + var(--right)));
+}
+
+#inspector_toggle:checked ~ #myInspector {
+    right: 0;
+    --right: 0;
+}
+
+#inspector_toggle:not(:checked) ~ #myInspector {
+    right: -380px;
+    --right: -380px;
+}
+
+#inspector_toggle:not(:checked) ~ #myViewer {
+    --right: 0;
+    right: 0;
+    width: calc(100% - var(--left));
+}
+
+
+/* custom scrollbar dynedoc */
+
+#myInspector::-webkit-scrollbar-track {
+    background-color: lightgray;
+    border-radius: 10px;
+  }
+
+  #myInspector::-webkit-scrollbar {
+    width: 7.5px;
+  }
+
+  #myInspector::-webkit-scrollbar-thumb {
+    background-color: rgb(0, 97, 167);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 1px solid lightgray;
+
+  }
+
+  .annotation-marker {
+    color: #ffffff;
+    line-height: 1.8;
+    text-align: center;
+    font-family: "monospace";
+    font-weight: bold;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 15px;
+    border: 2px solid #ffffff;
+    background: black;
+    visibility: hidden;
+    box-shadow: 5px 5px 15px 1px #000000;
+    z-index: 0;
+}
+
+.annotation-label {
+    position: absolute;
+    max-width: 400px;
+    min-height: 50px;
+    padding: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background: #ffffff;
+    color: #000000;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 8px;
+    border: #ffffff solid 2px;
+    box-shadow: 5px 5px 15px 1px #000000;
+    z-index: 90000;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.annotation-label:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 8px 12px 8px 0;
+    border-color: transparent white;
+    display: block;
+    width: 0;
+    z-index: 1;
+    margin-top: -11px;
+    left: -12px;
+    top: 20px;
+}
+
+.annotation-label:before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 9px 13px 9px 0;
+    border-color: transparent #ffffff;
+    display: block;
+    width: 0;
+    z-index: 0;
+    margin-top: -12px;
+    left: -15px;
+    top: 20px;
+}
+
+.annotation-title {
+    font: normal arial, serif;
+    margin-bottom: 8px;
+    font-size: clamp(15px, 2vw, 18px);
+
+}
+
+.annotation-desc {
+    font: normal arial, serif;
+    font-size: clamp(14px, 1.5vw, 17px);
+
+}
+
+@media (max-width:1025px){
+    .fixedWidthHeightTooltipBtn{
+        width:40px !important;
+        height:40px !important;
+    }
+
+    .fa-2x{
+        font-size:1.5em !important;
+    }
+
+    #myExplorer{
+        width:270px !important;
+    }
+    #myInspector{
+        width:270px !important;
+    }
+
+    #explorer_toggle:checked ~ #myViewer {
+        left: 270px;
+        --left: 300;
+        width: calc(100% - (var(--left) + var(--right)));
+    }
+    #inspector_toggle:checked ~ #myViewer {
+        --right: 270;
+        right:270px;
+        width: calc(100% - (var(--left) + var(--right)));
+    }
+    #explorer_toggle:checked + #explorer_toggle_label {
+        left: 290px;
+    }
+    #inspector_toggle:checked + #inspector_toggle_label {
+        right: 290px;
+    }
+    .xeokit-table .td2 {
+        overflow-wrap: break-word !important;
+        max-width:200px !important;
+    }
+
+    .annotation-label {
+        transform:scale(0.6) !important;
+        transform-origin: left top !important;
+    }
+
+    .xeokit-tabs{
+        overflow:auto !important;
+        height:100%;
+    }
+    /* .annotation-label img{ translate(-50px,-50px) !important;
+        transform:scale(0.5) !important;
+    } */
+}
+
+

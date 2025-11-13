@@ -1,0 +1,70 @@
+import {Controller} from "../Controller.js";
+import {DistanceMeasurementsPlugin} from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
+
+/** @private */
+class SelectionTool extends Controller {
+
+    constructor(parent, cfg) {
+
+        super(parent);
+
+        if (!cfg.buttonElement) {
+            throw "Missing config: buttonElement";
+        }
+
+        const buttonElement = cfg.buttonElement;
+		const undoBtnElement = cfg.undoBtnElement;
+
+        this.on("enabled", (enabled) => {
+            if (!enabled) {
+                buttonElement.classList.add("disabled");
+            } else {
+                buttonElement.classList.remove("disabled");
+            }
+        });
+		const distanceMeasurements = new DistanceMeasurementsPlugin(this.viewer);
+
+        this.on("active", (active) => {
+			
+            if (active) {
+                buttonElement.classList.add("active");
+              /*  this._onPick = this.viewer.cameraControl.on("picked", (pickResult) => {
+                    if (!pickResult.entity) {
+                        return;
+                    }
+					
+                  pickResult.entity.selected = !pickResult.entity.selected;
+                });
+				*/
+            	distanceMeasurements.control.activate();
+            } else {
+                buttonElement.classList.remove("active");
+               /* if (this._onPick !== undefined) {
+                    this.viewer.cameraControl.off(this._onPick);
+                    this._onPick = undefined;
+                }*/
+				distanceMeasurements.control.deactivate();
+            }
+        });
+
+        buttonElement.addEventListener("click", (event) => {
+            if (this.getEnabled()) {
+                this.bimViewer._sectionTool.hideControl();
+                const active = this.getActive();
+                this.setActive(!active);
+            }
+            event.preventDefault();
+        });
+
+        this.bimViewer.on("reset", () => {
+            this.setActive(false);
+        });
+		
+		undoBtnElement.addEventListener("click", (event) => {
+			distanceMeasurements.clear();
+            event.preventDefault();
+        });
+    }
+}
+
+export {SelectionTool};
